@@ -3,6 +3,7 @@ package config
 import (
 	"flag"
 	"log"
+	"log/slog"
 	"os"
 
 	"github.com/ilyakaznacheev/cleanenv"
@@ -24,10 +25,8 @@ func MustLoad() *Config {
 	configPath = os.Getenv("CONFIG_PATH")
 
 	if configPath == "" {
-		flags := flag.String("config", "", "Path to the configuration file")
+		flag.StringVar(&configPath, "config", "", "Path to the configuration file")
 		flag.Parse()
-
-		configPath = *flags
 
 		if configPath == "" {
 			log.Fatal("Configuration file path is not set")
@@ -42,8 +41,9 @@ func MustLoad() *Config {
 
 	err := cleanenv.ReadConfig(configPath, &cfg)
 	if err != nil {
-		log.Fatalf("Can not read config file: %s", err.Error())
+		log.Fatalf("Cannot read config file: %s", err.Error())
 	}
 
+	slog.Info("Configuration loaded successfully", slog.String("", configPath))
 	return &cfg
 }
