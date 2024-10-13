@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/prasad89/go-restful-api/internal/config"
+	"github.com/prasad89/go-restful-api/internal/http/handlers/student"
 )
 
 func main() {
@@ -17,16 +18,14 @@ func main() {
 
 	router := http.NewServeMux()
 
-	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Welcome to Go server!"))
-	})
+	router.HandleFunc("POST /api/students", student.New())
 
 	server := http.Server{
 		Addr:    cfg.Address,
 		Handler: router,
 	}
 
-	slog.Info("Server is started", slog.String("", cfg.Address))
+	slog.Info("Server is started", slog.String("address", cfg.Address))
 
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)

@@ -44,6 +44,6 @@ func MustLoad() *Config {
 		log.Fatalf("Cannot read config file: %s", err.Error())
 	}
 
-	slog.Info("Configuration loaded successfully", slog.String("", configPath))
+	slog.Info("Configuration loaded successfully", slog.String("path", configPath))
 	return &cfg
 }
