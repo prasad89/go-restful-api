@@ -45,7 +45,7 @@ func New(storage storage.Storage) http.HandlerFunc {
 	}
 }
 
-func GetById(storgae storage.Storage) http.HandlerFunc {
+func GetById(storage storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := r.PathValue("id")
 		slog.Info("Getting a student", slog.String("id", id))
@@ -56,7 +56,7 @@ func GetById(storgae storage.Storage) http.HandlerFunc {
 			return
 		}
 
-		student, err := storgae.GetStudentById(intId)
+		student, err := storage.GetStudentById(intId)
 		if err != nil {
 			slog.Error("Error getting student", slog.String("id", id))
 			response.WriteJson(w, http.StatusInternalServerError, response.GeneralError(err))
