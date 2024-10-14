@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log"
 	"log/slog"
 	"net/http"
 	"os"
@@ -11,6 +12,7 @@ import (
 
 	"github.com/prasad89/go-restful-api/internal/config"
 	"github.com/prasad89/go-restful-api/internal/http/handlers/student"
+	"github.com/prasad89/go-restful-api/internal/storage/sqlite"
 )
 
 func main() {
@@ -18,7 +20,14 @@ func main() {
 
 	router := http.NewServeMux()
 
-	router.HandleFunc("POST /api/students", student.New())
+	storage, err := sqlite.New(cfg)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	slog.Info("Storage initialized", slog.String("env", cfg.Env))
+
+	router.HandleFunc("POST /api/students", student.New(storage))
 
 	server := http.Server{
 		Addr:    cfg.Address,
@@ -45,7 +54,8 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	err := server.Shutdown(ctx)
+	// Something is messed up here need to 👀
+	err = server.Shutdown(ctx)
 	if err != nil {
 		slog.Error("Failed to shutdown server", slog.String("error", err.Error()))
 	}
