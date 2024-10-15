@@ -51,26 +51,6 @@ func (s *Sqlite) CreateStudent(name string, email string, age int) (int64, error
 	return lastId, nil
 }
 
-func (s *Sqlite) GetStudentById(id int64) (types.Student, error) {
-	stmt, err := s.Db.Prepare("SELECT id, name, email, age FROM students WHERE ID=? LIMIT 1")
-	if err != nil {
-		return types.Student{}, err
-	}
-	defer stmt.Close()
-
-	var student types.Student
-
-	err = stmt.QueryRow(id).Scan(&student.Id, &student.Name, &student.Email, &student.Age)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return types.Student{}, fmt.Errorf("no student found with id %s", fmt.Sprint(id))
-		}
-		return types.Student{}, fmt.Errorf("query error:%w", err)
-	}
-
-	return student, nil
-}
-
 func (s *Sqlite) GetStudents() ([]types.Student, error) {
 	stmt, err := s.Db.Prepare("SELECT id, name, email, age FROM students")
 	if err != nil {
@@ -100,4 +80,32 @@ func (s *Sqlite) GetStudents() ([]types.Student, error) {
 	}
 
 	return students, nil
+}
+
+func (s *Sqlite) GetStudent(id int64) (types.Student, error) {
+	stmt, err := s.Db.Prepare("SELECT id, name, email, age FROM students WHERE ID=? LIMIT 1")
+	if err != nil {
+		return types.Student{}, err
+	}
+	defer stmt.Close()
+
+	var student types.Student
+
+	err = stmt.QueryRow(id).Scan(&student.Id, &student.Name, &student.Email, &student.Age)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return types.Student{}, fmt.Errorf("no student found with id %s", fmt.Sprint(id))
+		}
+		return types.Student{}, fmt.Errorf("query error:%w", err)
+	}
+
+	return student, nil
+}
+
+func (s *Sqlite) UpdateStudent(name string, email string, age int) (int64, error) {
+	return 0, nil
+}
+
+func (s *Sqlite) DeleteStudent(id int64) (int64, error) {
+	return 0, nil
 }
